@@ -42,7 +42,7 @@ ServiceContainer.prototype.getArray = function (ids, callback) {
 
 ServiceContainer.prototype.get = function (id, callback) {
     if (id instanceof Array) {
-        this.getArray(id, callback);
+        return this.getArray(id, callback);
     }
     if (this.services[id]) {
         return callback(null, this.services[id]);
