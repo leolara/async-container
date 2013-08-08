@@ -19,7 +19,16 @@ ServiceContainer.create = function() {
 }
 
 ServiceContainer.prototype.addDefinition = function (id, def) {
+    if (!(id instanceof String)) {
+        this.addDefinitions(id);
+    }
     this.service_definitions[id] = def;
+}
+
+ServiceContainer.prototype.addDefinitions = function (defs) {
+    for (var id in defs) {
+        this.addDefinition(id, defs[id]);
+    }
 }
 
 ServiceContainer.prototype.get = function (id, callback) {
