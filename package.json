@@ -1,6 +1,6 @@
 {
     "author": "Leo Lara <leo@leolara.me>",
-    "name": "leolara/async-container",
+    "name": "async-container",
     "description": "Asynchronous Dependency Injection Container for Javascript",
     "version": "0.1.1",
     "repository": {
