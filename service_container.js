@@ -8,18 +8,26 @@ if (typeof Q == 'undefined') {
     var Q = require('q');
 }
 
-var ServiceContainer = function() {
+var mockEtc = {
+    get: function () {}
+}
+
+var ServiceContainer = function(etc) {
     this.service_definitions = {};
     this.defers = {};
     this.services = {};
+    this.etc = mockEtc;
+    if (etc instanceof Object) {
+        this.etc = etc;
+    }
 }
 
-ServiceContainer.create = function() {
-    return new ServiceContainer();
+ServiceContainer.create = function(etc) {
+    return new ServiceContainer(etc);
 }
 
 ServiceContainer.prototype.addDefinition = function (id, def) {
-    if (!(id instanceof String)) {
+    if (!(typeof id == "string")) {
         this.addDefinitions(id);
     }
     this.service_definitions[id] = def;
