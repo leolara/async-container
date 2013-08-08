@@ -4,10 +4,14 @@
  * @author Leo Lara <leo@leolara.me>
  */
 
+if (typeof Q == 'undefined') {
+    var Q = require('q');
+}
+
 var ServiceContainer = function() {
     this.service_definitions = {};
+    this.defers = {};
     this.services = {};
-    this.waiting = {};
 }
 
 ServiceContainer.create = function() {
@@ -22,50 +26,39 @@ ServiceContainer.prototype.get = function (id, callback) {
     if (id instanceof Array) {
         return this.getArray(id, callback);
     }
-    if (this.services[id]) {
-        return callback(null, this.services[id]);
+    if (typeof this.defers[id] != 'undefined') {
+        if (callback) {
+            this.defers[id].then(callback);
+        }
+        return this.defers[id].promise;
     }
 
-    if (this.registerWaiting(id, callback) != 1) {
-        return;
-    }
+    this.defers[id] = Q.defer();
 
     if (!(this.service_definitions[id].depends instanceof Array)) {
         this.callFactory(id);
     } else {
         this.callFactoryDepends(id);
     }
+
+    return this.defers[id].promise;
 }
 
 ServiceContainer.prototype.getArray = function (ids, callback) {
-    var count = ids.length;
     var self = this;
 
-    function sendAll() {
-        var args = [null];
-        ids.forEach(function (id) {
-            args.push(self.services[id]);
-        });
-        callback.apply(undefined, args);
-    }
+    var promises = []
 
     ids.forEach(function (id) {
-        self.get(id, function () {
-            count--;
-            if (count == 0) {
-                sendAll();
-            }
-        });
+       promises.push(self.get(id));
     });
+
+    Q.all(promises).spread(callback);
+
 }
 
-Service
-
 ServiceContainer.prototype.callFactory = function (id) {
-    var self = this;
-    this.service_definitions[id].factory(this, function (err, service) {
-        self.factoryCallback(self, id, service);
-    });
+    this.service_definitions[id].factory.call(this, this.getFactoryCallback(id));
 }
 
 ServiceContainer.prototype.callFactoryDepends = function (id) {
@@ -76,32 +69,20 @@ ServiceContainer.prototype.factoryDependsCreateCallback = function (id) {
     var self = this;
     return function () {
         var args = Array.prototype.slice.call(arguments);
-        args.splice(0,1);
-        args.unshift(
-            self,
-            function (err, service) {
-                self.factoryCallback(self, id, service);
-            }
-        );
-        self.service_definitions[id].factory.apply(undefined, args);
+        args.unshift(self.getFactoryCallback(id));
+        self.service_definitions[id].factory.apply(this, args);
     }
 }
 
-ServiceContainer.prototype.registerWaiting = function (id, callback) {
-    if (!(this.waiting[id] instanceof Array)) {
-        this.waiting[id] = [];
+ServiceContainer.prototype.getFactoryCallback = function(id) {
+    var self = this;
+    return function (err, service) {
+        if (err) {
+            return self.defers[id].reject(err);
+        }
+        self.services[id] = service;
+        self.defers[id].resolve(service);
     }
-
-    this.waiting[id].push(callback);
-
-    return this.waiting[id].length;
-}
-
-ServiceContainer.prototype.factoryCallback = function (container, id, service) {
-    container.services[id] = service;
-    container.waiting[id].forEach( function (callback) {
-        return callback(null, service);
-    });
 }
 
 exports = module.exports = ServiceContainer;
