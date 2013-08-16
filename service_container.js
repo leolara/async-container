@@ -52,6 +52,11 @@ ServiceContainer.prototype.get = function (id, callback) {
 
     this.defers[id] = Q.defer();
 
+    if (typeof this.service_definitions[id] == 'undefined') {
+        this.defers[id].reject({error: 1});
+        return this.defers[id].promise;
+    }
+
     if (!(this.service_definitions[id].depends instanceof Array)) {
         this.callFactory(id);
     } else {
@@ -87,7 +92,7 @@ ServiceContainer.prototype.factoryDependsCreateCallback = function (id) {
     return function () {
         var args = Array.prototype.slice.call(arguments);
         args.unshift(self.getFactoryCallback(id));
-        self.service_definitions[id].factory.apply(this, args);
+        self.service_definitions[id].factory.apply(self, args);
     }
 }
 
