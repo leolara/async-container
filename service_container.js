@@ -16,6 +16,7 @@ var ServiceContainer = function(etc) {
     this.service_definitions = {};
     this.defers = {};
     this.services = {};
+    this.tags = {};
     this.etc = mockEtc;
     if (etc instanceof Object) {
         this.etc = etc;
@@ -27,10 +28,20 @@ ServiceContainer.create = function(etc) {
 }
 
 ServiceContainer.prototype.addDefinition = function (id, def) {
+    var self = this;
     if (!(typeof id == "string")) {
         this.addDefinitions(id);
     }
     this.service_definitions[id] = def;
+    if (typeof def['tags'] != 'undefined') {
+        def['tags'].forEach(function (tag) {
+            if (typeof self.tags[tag] == 'undefined') {
+                self.tags[tag] = [id];
+            } else {
+                self.tags[tag].push(id);
+            }
+        });
+    }
 }
 
 ServiceContainer.prototype.addDefinitions = function (defs) {
@@ -81,6 +92,24 @@ ServiceContainer.prototype.getArray = function (ids, callback) {
 
 ServiceContainer.prototype.has = function (id) {
     return (typeof this.service_definitions[id] != 'undefined');
+}
+
+ServiceContainer.prototype.getTagIds = function (tag) {
+    if (typeof this.tags[tag] == 'undefined') {
+        return [];
+    }
+
+    return this.tags[tag];
+}
+
+ServiceContainer.prototype.tagGet = function (tag) {
+    var ids = this.getTagIds(tag);
+
+    if (ids.length > 0) {
+        return this.getArray(ids);
+    }
+
+    return null;
 }
 
 ServiceContainer.prototype.callFactory = function (id) {
