@@ -79,6 +79,10 @@ ServiceContainer.prototype.getArray = function (ids, callback) {
 
 }
 
+ServiceContainer.prototype.has = function (id) {
+    return (typeof this.service_definitions[id] != 'undefined');
+}
+
 ServiceContainer.prototype.callFactory = function (id) {
     this.service_definitions[id].factory.call(this, this.getFactoryCallback(id));
 }
