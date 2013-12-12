@@ -64,7 +64,7 @@ ServiceContainer.prototype.get = function (id, callback) {
     this.defers[id] = Q.defer();
 
     if (typeof this.service_definitions[id] == 'undefined') {
-        this.defers[id].reject({error: 1});
+        this.defers[id].reject({error: 1, message: "Service " + id + " does not exist!"});
         return this.defers[id].promise;
     }
 
