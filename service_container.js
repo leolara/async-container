@@ -54,6 +54,10 @@ ServiceContainer.prototype.get = function (id, callback) {
     if (id instanceof Array) {
         return this.getArray(id, callback);
     }
+    if (id.charAt(0) == '%') {
+        return this.getParameter(id);
+    }
+
     if (typeof this.defers[id] != 'undefined') {
         if (callback) {
             this.defers[id].then(callback);
@@ -118,6 +122,30 @@ ServiceContainer.prototype.callFactory = function (id) {
 
 ServiceContainer.prototype.callFactoryDepends = function (id) {
     this.get(this.service_definitions[id].depends, this.factoryDependsCreateCallback(id));
+}
+
+ServiceContainer.prototype.getParameter = function (id) {
+    if (typeof this.defers[id] != 'undefined') {
+        return this.defers[id].promise;
+    }
+
+    this.defers[id] = Q.defer();
+
+    var key;
+    var value;
+
+    if (id.charAt(0) != '%') {
+        key = id;
+        id = '%' + id;
+    } else {
+        key = id.substring(0);
+    }
+
+    value = this.etc.get(key);
+
+    this.defers[id].resolve(value);
+
+    return this.defers[id].promise;
 }
 
 ServiceContainer.prototype.factoryDependsCreateCallback = function (id) {
