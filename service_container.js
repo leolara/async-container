@@ -68,6 +68,11 @@ ServiceContainer.prototype.get = function (id, callback) {
         return this.defers[id].promise;
     }
 
+    if (typeof this.service_definitions[id].factory == 'undefined') {
+        this.defers[id].reject({error: 2, message: "Service " + id + " has no factory!"});
+        return this.defers[id].promise;
+    }
+
     if (!(this.service_definitions[id].depends instanceof Array)) {
         this.callFactory(id);
     } else {
