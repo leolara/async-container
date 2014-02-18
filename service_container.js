@@ -149,13 +149,13 @@ ServiceContainer.prototype.stat = function() {
     var self = this;
     return Object.keys(this.defers)
     .map(
-        function(k, i){
-            return ([k, self.defers[k].promise.inspect().state]);
+        function(key){
+            return ([key, self.defers[key].promise.inspect().state]);
     })
     .reduce(
-        function(o, x){
-            o[x[0].toString()]=x[1];
-            return o;
+        function(obj, pair){
+            obj[pair[0].toString()]=pair[1];
+            return obj;
         },
         {}
     );
