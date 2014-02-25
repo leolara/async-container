@@ -148,19 +148,20 @@ ServiceContainer.prototype.getFactoryCallback = function(id) {
 ServiceContainer.prototype.stat = function() {
     var self = this;
     return Object.keys(this.defers)
-    .map(
-        function(key){
-            var state = self.defers[key].promise.inspect().state;
-            var reason = self.defers[key].promise.inspect().reason || "";
-            return ([key, state === 'rejected' ? state + " because " + reason : state]);
-    })
-    .reduce(
-        function(obj, pair){
-            obj[pair[0].toString()]=pair[1];
-            return obj;
-        },
-        {}
-    );
+        .map(
+            function(key){
+                var state = self.defers[key].promise.inspect().state;
+                var reason = self.defers[key].promise.inspect().reason || "";
+                return ([key, state === 'rejected' ? state + " because " + reason : state]);
+            }
+        )
+        .reduce(
+            function(obj, pair){
+                obj[pair[0].toString()]=pair[1];
+                return obj;
+            },
+            {}
+        );
 };
 
 exports = module.exports = ServiceContainer;
