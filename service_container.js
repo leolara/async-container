@@ -150,7 +150,9 @@ ServiceContainer.prototype.stat = function() {
     return Object.keys(this.defers)
     .map(
         function(key){
-            return ([key, self.defers[key].promise.inspect().state]);
+            var state = self.defers[key].promise.inspect().state;
+            var reason = self.defers[key].promise.inspect().reason || "";
+            return ([key, state === 'rejected' ? state + " because " + reason : state]);
     })
     .reduce(
         function(obj, pair){
