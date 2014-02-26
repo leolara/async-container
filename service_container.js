@@ -161,7 +161,8 @@ ServiceContainer.prototype.stat = function() {
                 return obj;
             },
             {}
-        );
+        )
+    ;
 };
 
 exports = module.exports = ServiceContainer;
