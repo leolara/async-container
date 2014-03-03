@@ -72,6 +72,11 @@ ServiceContainer.prototype.get = function (id, callback) {
         return this.defers[id].promise;
     }
 
+    if (typeof this.service_definitions[id].factory == 'undefined') {
+        this.defers[id].reject({error: 2, message: "Service " + id + " has no factory!"});
+        return this.defers[id].promise;
+    }
+
     if (!(this.service_definitions[id].depends instanceof Array)) {
         this.callFactory(id);
     } else {
@@ -167,5 +172,25 @@ ServiceContainer.prototype.getFactoryCallback = function(id) {
         self.defers[id].resolve(service);
     }
 }
+
+ServiceContainer.prototype.stat = function() {
+    var self = this;
+    return Object.keys(this.defers)
+        .map(
+            function(key){
+                var state = self.defers[key].promise.inspect().state;
+                var reason = JSON.stringify(self.defers[key].promise.inspect().reason) || "";
+                return ([key, state === 'rejected' ? state + " because " + reason : state]);
+            }
+        )
+        .reduce(
+            function(obj, pair){
+                obj[pair[0].toString()]=pair[1];
+                return obj;
+            },
+            {}
+        )
+    ;
+};
 
 exports = module.exports = ServiceContainer;
