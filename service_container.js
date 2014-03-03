@@ -151,7 +151,7 @@ ServiceContainer.prototype.stat = function() {
         .map(
             function(key){
                 var state = self.defers[key].promise.inspect().state;
-                var reason = self.defers[key].promise.inspect().reason || "";
+                var reason = JSON.stringify(self.defers[key].promise.inspect().reason) || "";
                 return ([key, state === 'rejected' ? state + " because " + reason : state]);
             }
         )
