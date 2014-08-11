@@ -66,7 +66,7 @@ But the interesting magic of BlueHub comes when you have more than one service a
     // Business Logic service with dependencies
     container.add('acme_business_logic', {
       depends: ['redis_client', 'mongodb_client']
-      factory: function (callback, redis, mongodb) {
+      factory: function (redis, mongodb, callback) {
         callback(null, new AcmeBusinessLogic(redis, mongodb));
       }
     });
@@ -83,7 +83,7 @@ Note that the service factories are only called once, even if they are requested
 
 ## <a name="doc"></a>Documentation
 
-The BlueHub API is very simple, it has to main methods: `add` and `get`. But before entering in material
+The BlueHub API is very simple, it has two main methods: `add` and `get`. But before entering in material
 
 ### What is a service
 
@@ -100,7 +100,7 @@ The default service definition has a mandatory property `factory` and a option p
 
     var myservice_definition = {
       depends: ['other_service'],
-      factory: function (callback, other_service) {
+      factory: function (other_service, callback) {
          // service is created here and passed to callback
          // ...
       }
@@ -118,7 +118,7 @@ Let us see a simple one for a service that has no dependencies, and which creati
     	callback(null, my_service);
     }
 
-As we see the first parameter of the factory is always a callback to which we will pass the service once it has been created. In this case the service was created synchronously, so the callback was not very useful.
+As we see the last parameter of the factory is always a callback to which we will pass the service once it has been created. In this case the service was created synchronously, so the callback was not very useful.
 
 Let us see how we would do it in a more complex and asynchronous setting. For example the factory for a service that is a MongoDB DB handle:
 
@@ -157,7 +157,7 @@ For example, we should split our previous mongodb example in two services, one f
     }
     
     // MongoDB database handle
-    function (callback, mongoClient) {
+    function (mongoClient, callback) {
         callback(null, mongoClient.db("mydb"));
     }
 
@@ -167,7 +167,7 @@ We have here two services factories, the second one have an additional parameter
 
 The dependencies are defined as an array of services ids, in the field `depends` of the service definition. It is optional to have dependencies.
 
-If a service have dependencies BlueHub will create the dependencies before calling the service factory and pass the dependencies as parameters of the factory, in the same order than in `depends` and after `callback` parameter.
+If a service have dependencies BlueHub will create the dependencies before calling the service factory and pass the dependencies as parameters of the factory, in the same order than in `depends` and before the `callback` parameter.
 
 Now we can see in the MongoDB example how would be the service definitions:
 
@@ -190,7 +190,7 @@ Now we can see in the MongoDB example how would be the service definitions:
     var mongodb_db_def = {
       depends: ['mongodb_client'],
       // MongoDB database handle
-      factory: function (callback, mongoClient) {
+      factory: function (mongoClient, callback) {
           callback(null, mongoClient.db("mydb"));
       }
     }
@@ -236,7 +236,7 @@ Following our example with the MongoDB:
     container.add('mongodb_mydb', {
       depends: ['mongodb_client'],
       // MongoDB database handle
-      factory: function (callback, mongoClient) {
+      factory: function (mongoClient, callback) {
           callback(null, mongoClient.db("mydb"));
       }
     });
@@ -278,7 +278,7 @@ In our previous example we could do:
     });
 ```
 
-What happens next is the interesting part of BlueHub, it will check mongodb_mydb to see if it has been request already, if so we will receive the same instance that already was created. If the services was not crated before, then will check the dependencies, and will request `mongodb_client` that as we saw it is created asynchronously. Once the dependencies have been created, will call the factory of `mongodb_mydb` passing the dependencies, and then calling the callback passed to `get`.
+What happens next is the interesting part of BlueHub, it will check mongodb_mydb to see if it has been request already, if so we will receive the same instance that already was created. If the services was not created before, then will check the dependencies, and will request `mongodb_client` that as we saw it is created asynchronously. Once the dependencies have been created, will call the factory of `mongodb_mydb` passing the dependencies, and then calling the callback passed to `get`.
 
 BlueHub uses Q promises internally, so we can use `get` using a promises API:
 
