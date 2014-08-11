@@ -43,7 +43,7 @@ test('Service depends on parameters (params plugin)', function (t) {
 
     container.add('test1', {
         depends: ['%testparam1', '%testparam2', '%testparam3'],
-        factory: function (cb, a, b, c) {
+        factory: function (a, b, c, cb) {
             t.pass();
             cb(null, a + b + c);
         }

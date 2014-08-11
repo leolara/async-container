@@ -101,7 +101,7 @@ test('Dependencies creation with two levels', function (t) {
 
     container.add('test4', {
         depends: ['test1', 'test2', 'test3'],
-        factory: function (cb, test1, test2, test3) {
+        factory: function (test1, test2, test3, cb) {
             t.pass('Factory with dependencies called');
             cb(null, test1 + test2 + test3);
         }
@@ -126,14 +126,14 @@ test('Dependencies creation with three levels', function (t) {
 
     container.add('test2', {
         depends: ['test1'],
-        factory: function (cb, test1) {
+        factory: function (test1, cb) {
             cb(null, test1  + 989);
         }
     });
 
     container.add('test3', {
         depends: ['test2'],
-        factory: function (cb, test2) {
+        factory: function (test2, cb) {
             t.pass('Factory with dependencies called');
             cb(null, test2 + 986);
         }
