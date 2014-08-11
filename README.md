@@ -14,9 +14,9 @@
 
 ## <a name="highlights"></a>Highlights
 
- + Async/sync services creation using node.js callbacks
+ + Async/sync services creation using Node callbacks
  + Automatic dependencies resolution and (async) injection 
- + Works on Node.Js and the browser
+ + Works on Node and the browser
  + Extendable by plugins (some plugins included)
  + Lightweight, only dependency is Q promises
  + Lazy creation of services
@@ -271,10 +271,12 @@ When we add a service definition, this services is not created until the first t
 
 In our previous example we could do:
 
+```javascript
     container.get('mongodb_mydb', function (err, mydb) {
          mydb.whatever();
          /// …
     });
+```
 
 What happens next is the interesting part of BlueHub, it will check mongodb_mydb to see if it has been request already, if so we will receive the same instance that already was created. If the services was not crated before, then will check the dependencies, and will request `mongodb_client` that as we saw it is created asynchronously. Once the dependencies have been created, will call the factory of `mongodb_mydb` passing the dependencies, and then calling the callback passed to `get`.
 
