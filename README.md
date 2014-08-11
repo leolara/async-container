@@ -1,10 +1,10 @@
-# BlueHub - Asynchronous Dependency Injection
+# BlueHub - Asynchronous Dependency Injection for Javascript
 
 > is a Javascript simple and powerful service container that handle asynchronous (and synchronous) service creation and dependency injection
 
 > Just pass BlueHub a function that creates your service asynchronously and tell BlueHub on which other services it depends, BlueHub will automatically handle the dependency injection
 
-> It is like AngularJS dependency injection but lighter and **asynchronous**
+> It is like AngularJS dependency injection but lighter, **asynchronous** and works on the server!
 
 ## Contents
  + [Highlights](#highlights)
