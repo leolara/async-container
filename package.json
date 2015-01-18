@@ -1,6 +1,6 @@
 {
   "name": "bluehub",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "BlueHub is a Javascript simple and powerful service container that handle asynchronous (and synchronous) service creation and dependency injection. Just pass BlueHub a function that creates your service asynchronously and tell BlueHub on which other services it depends, BlueHub will automatically handle the dependency injection. It is like AngularJS dependency injection but lighter, asynchronous and works on the server!",
   "homepage": "https://github.com/leolara/async-container",
   "main": "lib/bluehub.js",
@@ -8,16 +8,25 @@
     "test": "tape test/*.js"
   },
   "author": {
-      "name": "Leo Lara",
-      "email": "leo@leolara.me",
-      "url": "http://leolara.me"
+    "name": "Leo Lara",
+    "email": "leo@leolara.me",
+    "url": "http://leolara.me"
   },
   "license": "MIT",
   "dependencies": {
+    "debug": "^2.1.1",
     "q": "^1.0.1"
   },
   "devDependencies": {
     "tape": "^2.14.0"
   },
-  "keywords": ["di", "dependency-injection", "ioc", "inversion-of-control", "dependency", "injection", "async"]
+  "keywords": [
+    "di",
+    "dependency-injection",
+    "ioc",
+    "inversion-of-control",
+    "dependency",
+    "injection",
+    "async"
+  ]
 }
